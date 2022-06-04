@@ -1,0 +1,3 @@
+{ 
+  "presets": ["@babel/preset-env"] // webpack 呼叫 babel-loader 時會調用這個 presets 編譯，幫你編譯 JS
+}
