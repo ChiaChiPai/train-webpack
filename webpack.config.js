@@ -2,17 +2,18 @@ const path = require("path")
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const extractCSS = new ExtractTextPlugin('css/[name].css')
 const CopyWebpackPlugin = require("copy-webpack-plugin")
+const HtmlWebpackPlugin = require("html-webpack-plugin")
 
 module.exports = {
   mode: process.env.NODE_ENV,
-  context: path.resolve(__dirname, './src/js'),
+  context: path.resolve(__dirname, './src'),
   entry: {
-    index: './index.js',
-    about: './about.js'
+    index: 'index',
+    about: 'about'
   },
   output: {
     path: path.resolve(__dirname, './dist'),
-    filename: './js/[name].js'
+    filename: './js/[name].js?[hash:8]'
   },
   devServer: {
     compress: true,
@@ -45,15 +46,6 @@ module.exports = {
   },
   module: {
     rules: [
-      {
-        test: /\.html$/,
-        use: [{
-          loader: "file-loader",
-          options: {
-            name: '[name].[ext]'
-          }
-        }]
-      },
       {
         test: /\.css$/,
         use: extractCSS.extract(["css-loader", "postcss-loader"])
@@ -108,6 +100,20 @@ module.exports = {
     extractCSS,
     new CopyWebpackPlugin([
       { from: __dirname + '/src/assets', to: 'assets' }
-    ])
+    ]),
+    new HtmlWebpackPlugin({
+      title: 'Webpack 前端自動化開發',
+      filename: 'index.html',
+      template: 'html/template.html',
+      viewport: 'width=device-width, initial-scale=1.0',
+      chunks: ['index']
+    }),
+    new HtmlWebpackPlugin({
+      title: 'about 前端自動化開發',
+      filename: 'about.html',
+      template: 'html/template.html',
+      viewport: 'width=device-width, initial-scale=1.0',
+      chunks: ['about']
+    })
   ]
 }
