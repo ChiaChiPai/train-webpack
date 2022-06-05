@@ -44,11 +44,31 @@ module.exports = {
     ],
     extensions: ['.js']
   },
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        vendor: {
+          test: /node_modules/,
+          name: 'vendor',
+          chunks: 'initial',
+          enforce: true
+        }
+      } 
+    }
+  },
   module: {
     rules: [
       {
+        test: /\.pug$/,
+        use: ['html-loader', 'pug-html-loader'],
+        include: path.resolve('src/pug'),
+        exclude: path.resolve('./node_modules')
+      },
+      {
         test: /\.css$/,
-        use: extractCSS.extract(["css-loader", "postcss-loader"])
+        use: extractCSS.extract(["css-loader", "postcss-loader"]),
+        include: path.resolve('src/css'),
+        exclude: path.resolve('./node_modules')
       },
       {
         test: /\.(sass|scss)$/,
@@ -57,11 +77,14 @@ module.exports = {
           'css-loader',
           'postcss-loader',
           'sass-loader'
-        ]
+        ],
+        include: path.resolve('src/scss'),
+        exclude: path.resolve('./node_modules')
       },
       {
         test: /\.js$/,
-        use: 'babel-loader'
+        use: 'babel-loader',
+        include: path.resolve('.'),
       },
       {
         test: /\.(jpe?g|png|gif)$/,
@@ -91,8 +114,10 @@ module.exports = {
                         interlaced: false,
                     }
                 }
-            }
-        ]
+            },
+        ],
+        include: path.resolve('src/images'),
+        exclude: path.resolve('./node_modules')
       }
     ]
   },
@@ -106,14 +131,22 @@ module.exports = {
       filename: 'index.html',
       template: 'html/template.html',
       viewport: 'width=device-width, initial-scale=1.0',
-      chunks: ['index']
+      chunks: ['index', 'vendor'],
+      minify: {
+        collapseWhitespace: true,
+        removeComments: true,
+        removeRedundantAttributes: true,
+        removeScriptTypeAttributes: true,
+        removeStyleLinkTypeAttributes: true,
+        useShortDoctype: true
+      }
     }),
     new HtmlWebpackPlugin({
       title: 'about 前端自動化開發',
       filename: 'about.html',
-      template: 'html/template.html',
+      template: 'pug/about.pug',
       viewport: 'width=device-width, initial-scale=1.0',
-      chunks: ['about']
+      chunks: ['about', 'vendor']
     })
   ]
 }
